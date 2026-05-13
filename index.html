@@ -7,12 +7,9 @@
     <link rel="stylesheet" href="design-system.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Стили для мобильной навигации -->
     <style>
-        .top-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
-        .bottom-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        
-        /* МОБИЛЬНАЯ НАВИГАЦИЯ */
         .mobile-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg-card); border-top: 1px solid var(--border);
@@ -23,7 +20,7 @@
         @media (max-width: 900px) {
             .mobile-nav { display: flex; }
             .nav-links { display: none; }
-            body { padding-bottom: 70px; } /* Отступ чтобы контент не перекрывался */
+            body { padding-bottom: 70px; }
             .top-grid, .bottom-grid { grid-template-columns: 1fr; }
         }
         .mobile-nav a {
@@ -34,11 +31,16 @@
         .mobile-nav a i { font-size: 20px; }
         .mobile-nav a.active { color: var(--accent); }
         .mobile-nav a:active { transform: scale(0.95); }
+        
+        /* Стили сетки */
+        .top-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+        .bottom-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        @media (max-width: 900px) { .top-grid, .bottom-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Верхняя навигация (Desktop) -->
+        <!-- Верхняя навигация -->
         <nav class="card flex justify-between items-center mb-4" style="padding: 14px 24px;">
             <div class="logo flex items-center gap-2 text-accent font-bold text-xl">
                 <i class="fas fa-bullseye"></i> МИССИЯ ВЫПОЛНИМА
@@ -51,27 +53,32 @@
             </div>
             <div class="user-info flex items-center gap-2 text-sm text-muted">
                 <span id="currentDate"></span>
-                <div class="avatar w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-bold text-xs">А</div>
+                <div class="avatar w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-bold text-xs">A</div>
             </div>
         </nav>
 
-        <!-- Основной контент -->
+        <!-- Сетка блоков -->
         <div class="top-grid">
+            <!-- 1. Баланс 5 Факторов -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-chart-radar"></i> Баланс 5 Факторов</div>
-                <div style="position: relative; height: 240px;"><canvas id="factorsChart"></canvas></div>
-            </div>
-
-            <div class="card">
-                <div class="card-title"><i class="fas fa-battery-three-quarters"></i> Энергетический Ресурс</div>
-                <div class="grid grid-2 gap-2">
-                    <div class="energy-indicator high"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Физическая</div><div class="progress h-1 mb-1"><div class="progress-fill success" style="width: 75%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">75%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS: Физическая')">SOS</button></div></div></div>
-                    <div class="energy-indicator medium"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Эмоциональная</div><div class="progress h-1 mb-1"><div class="progress-fill warning" style="width: 60%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">60%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS: Эмоциональная')">SOS</button></div></div></div>
-                    <div class="energy-indicator low"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Ментальная</div><div class="progress h-1 mb-1"><div class="progress-fill danger" style="width: 40%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">40%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS: Ментальная')">SOS</button></div></div></div>
-                    <div class="energy-indicator medium"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Духовная</div><div class="progress h-1 mb-1"><div class="progress-fill warning" style="width: 55%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">55%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS: Духовная')">SOS</button></div></div></div>
+                <div style="position: relative; height: 240px; width: 100%;">
+                    <canvas id="factorsChart"></canvas>
                 </div>
             </div>
 
+            <!-- 2. Энергия -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-battery-three-quarters"></i> Энергетический Ресурс</div>
+                <div class="grid grid-2 gap-2">
+                    <div class="energy-indicator high"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Физическая</div><div class="progress h-1 mb-1"><div class="progress-fill success" style="width: 75%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">75%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS')">SOS</button></div></div></div>
+                    <div class="energy-indicator medium"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Эмоциональная</div><div class="progress h-1 mb-1"><div class="progress-fill warning" style="width: 60%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">60%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS')">SOS</button></div></div></div>
+                    <div class="energy-indicator low"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Ментальная</div><div class="progress h-1 mb-1"><div class="progress-fill danger" style="width: 40%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">40%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS')">SOS</button></div></div></div>
+                    <div class="energy-indicator medium"><span class="energy-dot"></span><div class="flex-1"><div class="text-xs text-muted mb-1">Духовная</div><div class="progress h-1 mb-1"><div class="progress-fill warning" style="width: 55%"></div></div><div class="flex justify-between items-center"><span class="text-xs font-bold">55%</span><button class="btn btn-danger btn-sm py-1 px-2 text-[10px]" onclick="alert('SOS')">SOS</button></div></div></div>
+                </div>
+            </div>
+
+            <!-- 3. Стандарт -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-mountain"></i> Стандарт Жизни</div>
                 <div class="mb-4"><div class="flex justify-between text-sm mb-1"><span class="text-muted">💰 Капитал</span></div><div class="flex justify-between text-xs mb-1"><span class="text-accent font-bold">$150k</span><span class="text-muted">$500k</span></div><div class="progress"><div class="progress-fill" style="width: 30%"></div></div></div>
@@ -80,6 +87,7 @@
         </div>
 
         <div class="bottom-grid">
+            <!-- 4. Быстрые действия -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-bolt"></i> Быстрые Действия</div>
                 <div class="grid grid-2 gap-3">
@@ -90,14 +98,15 @@
                 </div>
             </div>
 
+            <!-- 5. Поток -->
             <div class="card flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-4">
-                    <div class="card-title mb-0"><i class="fas fa-water"></i> Текущий Поток (Фокус)</div>
-                    <span class="badge badge-success">● Активная сессия</span>
+                    <div class="card-title mb-0"><i class="fas fa-water"></i> Текущий Поток</div>
+                    <span class="badge badge-success">● Активно</span>
                 </div>
                 <div class="bg-card border border-border rounded p-3 mb-4 flex justify-between items-center">
-                    <div><div class="font-bold text-sm">📝 Подготовить презентацию</div><div class="text-xs text-muted mt-1">Энергия: 🟢 Высокая | Из бэклога</div></div>
-                    <button class="btn btn-secondary btn-sm">🔄 Заменить</button>
+                    <div><div class="font-bold text-sm">📝 Презентация</div><div class="text-xs text-muted mt-1">Энергия: 🟢 Высокая</div></div>
+                    <button class="btn btn-secondary btn-sm">🔄</button>
                 </div>
                 <div class="timer text-accent" id="timer">45:00</div>
                 <div class="flex justify-center gap-3 mb-4">
@@ -105,12 +114,12 @@
                     <button class="btn btn-warning" onclick="pauseTimer()"><i class="fas fa-pause"></i> Пауза</button>
                     <button class="btn btn-secondary" onclick="resetTimer()"><i class="fas fa-redo"></i> Сброс</button>
                 </div>
-                <div class="bg-hover border-l-4 border-accent p-3 rounded text-sm text-muted"><strong class="text-main">Принцип №10:</strong> Одно дело в единицу времени. Пока таймер работает, вы не переключаетесь.</div>
+                <div class="bg-hover border-l-4 border-accent p-3 rounded text-sm text-muted"><strong class="text-main">Принцип №10:</strong> Одно дело в единицу времени.</div>
             </div>
         </div>
     </div>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ (Mobile) -->
+    <!-- Мобильная навигация -->
     <nav class="mobile-nav">
         <a href="index.html" class="active"><i class="fas fa-home"></i><span>Дашборд</span></a>
         <a href="strategy.html"><i class="fas fa-mountain"></i><span>Стандарт</span></a>
@@ -119,57 +128,75 @@
         <a href="library.html"><i class="fas fa-book"></i><span>База</span></a>
     </nav>
 
+    <!-- Скрипты -->
+    <!-- 1. Подключаем Chart.js с defer (отложенная загрузка) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <!-- 2. Логика приложения -->
     <script>
-        const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', opts);
+        // Ждем полной загрузки страницы и библиотеки
+        window.addEventListener('load', function() {
+            
+            // Дата
+            const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', opts);
 
-        const ctx = document.getElementById('factorsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'radar',
-             {
-                labels: ['Здоровье', 'Безопасность', 'Свобода', 'Близкие', 'Дело'],
-                datasets: [{
-                    label: 'Баланс',
-                     [75, 60, 45, 80, 30],
-                    backgroundColor: 'rgba(99, 102, 241, 0.2)',
-                    borderColor: '#6366f1',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#6366f1'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        angleLines: { color: '#2a344a' },
-                        grid: { color: '#2a344a' },
-                        pointLabels: { color: '#94a3b8', font: { size: 11 } },
-                        ticks: { backdropColor: 'transparent', color: '#64748b', stepSize: 20, max: 100 }
+            // Инициализация графика
+            const ctx = document.getElementById('factorsChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Здоровье', 'Безопасность', 'Свобода', 'Близкие', 'Дело'],
+                        datasets: [{
+                            label: 'Баланс',
+                            data: [75, 60, 45, 80, 30],
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            borderColor: '#6366f1',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#6366f1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: '#2a344a' },
+                                grid: { color: '#2a344a' },
+                                pointLabels: { color: '#94a3b8', font: { size: 11 } },
+                                ticks: { backdropColor: 'transparent', color: '#64748b', stepSize: 20, max: 100 }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
                     }
-                },
-                plugins: { legend: { display: false } }
+                });
             }
-        });
 
-        let timerInterval, timeLeft = 45 * 60, isRunning = false;
-        const timerEl = document.getElementById('timer');
-        function updateDisplay() {
-            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
-            timerEl.textContent = `${m}:${s}`;
-        }
-        function startTimer() {
-            if (!isRunning) {
-                isRunning = true;
-                timerInterval = setInterval(() => {
-                    if (timeLeft > 0) { timeLeft--; updateDisplay(); }
-                    else { clearInterval(timerInterval); isRunning = false; alert('⏱ Сессия завершена!'); timeLeft = 15 * 60; updateDisplay(); }
-                }, 1000);
+            // Таймер
+            let timerInterval, timeLeft = 45 * 60, isRunning = false;
+            const timerEl = document.getElementById('timer');
+            
+            function updateDisplay() {
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
             }
-        }
-        function pauseTimer() { clearInterval(timerInterval); isRunning = false; }
-        function resetTimer() { clearInterval(timerInterval); isRunning = false; timeLeft = 45 * 60; updateDisplay(); }
+            
+            window.startTimer = function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    timerInterval = setInterval(() => {
+                        if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+                        else { clearInterval(timerInterval); isRunning = false; alert('⏱ Сессия завершена!'); timeLeft = 15 * 60; updateDisplay(); }
+                    }, 1000);
+                }
+            }
+            window.pauseTimer = function() { clearInterval(timerInterval); isRunning = false; }
+            window.resetTimer = function() { clearInterval(timerInterval); isRunning = false; timeLeft = 45 * 60; updateDisplay(); }
+            
+            updateDisplay();
+        });
     </script>
 </body>
 </html>
