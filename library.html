@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека — Миссия Выполнима</title>
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 10px 16px; border-radius: 8px; background: var(--bg-hover); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.2s; font-size: 14px; }
+        .tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .quote-card { background: var(--bg-hover); border-left: 4px solid var(--accent); padding: 16px; border-radius: 0 8px 8px 0; margin-bottom: 12px; position: relative; }
+        .quote-text { font-size: 15px; font-style: italic; margin-bottom: 8px; line-height: 1.5; }
+        .quote-author { font-size: 12px; color: var(--text-muted); }
+        .copy-btn { position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; }
+        .copy-btn:hover { color: var(--accent); }
+
+        .accordion { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+        .accordion-header { padding: 14px 16px; background: var(--bg-hover); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
+        .accordion-header:hover { background: #252f42; }
+        .accordion-body { padding: 16px; display: none; background: var(--bg-card); }
+        .accordion.open .accordion-body { display: block; }
+        .accordion-icon { transition: 0.2s; }
+        .accordion.open .accordion-icon { transform: rotate(180deg); }
+        
+        .tag { display: inline-block; padding: 4px 8px; background: rgba(99,102,241,0.15); color: var(--accent); border-radius: 4px; font-size: 11px; margin-right: 6px; margin-bottom: 6px; }
+        .check-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .check-item:last-child { border-bottom: none; }
+        .check-box { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+    </style>
+	    <!-- МОБИЛЬНАЯ НАВИГАЦИЯ (Стили) -->
+    <style>
+        .mobile-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-card); border-top: 1px solid var(--border);
+            display: none; justify-content: space-around; padding: 8px 0;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 900px) {
+            .mobile-nav { display: flex; }
+            .nav-links { display: none; }
+            body { padding-bottom: 70px; }
+        }
+        .mobile-nav a {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px;
+            padding: 6px; border-radius: 8px; transition: 0.2s; flex: 1; gap: 4px;
+        }
+        .mobile-nav a i { font-size: 20px; }
+        .mobile-nav a.active { color: var(--accent); }
+        .mobile-nav a:active { transform: scale(0.95); }
+    </style>
+</head>
+</head>
+<body>
+    <div class="container">
+        <!-- Навигация -->
+        <nav class="card flex justify-between items-center mb-4" style="padding: 14px 24px;">
+            <div class="logo flex items-center gap-2 text-accent font-bold text-xl">
+                <i class="fas fa-bullseye"></i> МИССИЯ ВЫПОЛНИМА
+            </div>
+            <div class="nav-links flex gap-4">
+                <a href="index.html" class="nav-link text-muted hover:text-main">Дашборд</a>
+                <a href="strategy.html" class="nav-link text-muted hover:text-main">Стратегия</a>
+                <a href="energy.html" class="nav-link text-muted hover:text-main">Энергия</a>
+                <a href="flow.html" class="nav-link text-muted hover:text-main">Поток</a>
+            </div>
+            <a href="index.html" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> На дашборд</a>
+        </nav>
+
+        <div class="card">
+            <div class="card-title mb-2"><i class="fas fa-book-open"></i> Библиотека Методологии</div>
+            <p class="text-muted text-sm mb-4">Справочник по принципам Маргулана Сейсембая. Используйте как шпаргалку при планировании и рефлексии.</p>
+
+            <!-- Табы -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('quotes')">💬 Цитаты</button>
+                <button class="tab-btn" onclick="switchTab('factors')">🏛 5 Факторов</button>
+                <button class="tab-btn" onclick="switchTab('energy')">🔋 Энергия</button>
+                <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели (SMART)</button>
+                <button class="tab-btn" onclick="switchTab('flow')">🌊 Поток</button>
+            </div>
+
+            <!-- Контент табов -->
+            <div id="quotes" class="tab-content active">
+                <div class="quote-card">
+                    <div class="quote-text">«Счастье — не результат успеха, а его предпосылка. Счастливые люди всегда успешны, но успешные не всегда счастливы.»</div>
+                    <div class="quote-author">— Философия системы</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-text">«Голова — это процессор для принятия решений, а не сервер для хранения информации. Выгружайте мысли на бумагу.»</div>
+                    <div class="quote-author">— Принцип выгрузки</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-text">«Быстро — это медленно, но без перерывов. Японская философия кайдзен гласит: не торопись, но не останавливайся.»</div>
+                    <div class="quote-author">— Принцип ритма</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-text">«Внимание = (время + энергия) × любовь. Качественное присутствие важнее количества часов.»</div>
+                    <div class="quote-author">— Формула отношений</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="quote-card">
+                    <div class="quote-text">«Мультизадачность крадёт 25–30% эффективности. Одно дело в единицу времени — закон сохранения фокуса.»</div>
+                    <div class="quote-author">— Принцип №10</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+
+            <div id="factors" class="tab-content">
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">🏥 Здоровье <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <p class="text-sm text-muted mb-2">Фундамент. Без него остальные факторы теряют значимость.</p>
+                        <div class="tag">Физическое</div><div class="tag">Эмоциональное</div><div class="tag">Ментальное</div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Сон 7–8 часов, регулярные медосмотры</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Питание: чистая вода, минимум переработки</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Движение: 45 мин активности ежедневно</span></div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">🛡 Безопасность <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <p class="text-sm text-muted mb-2">Ощущение защищённости. Замечаешь только когда пропадает.</p>
+                        <div class="tag">Личная</div><div class="tag">Экономическая</div><div class="tag">Юридическая</div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Финансовая подушка (3–6 месяцев расходов)</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>2–3 источника дохода, диверсификация</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Знание прав, безопасное окружение</span></div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">🕊 Свобода <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <p class="text-sm text-muted mb-2">Возможность выбора в рамках ответственности, а не вседозволенность.</p>
+                        <div class="tag">Физическая</div><div class="tag">Ментальная</div><div class="tag">Независимость</div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Замена «Мне нельзя» → «Я хочу, но не знаю как»</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Отказ от сравнения с другими</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Самодостаточность и внутренние опоры</span></div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">❤️ Близкие люди <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <p class="text-sm text-muted mb-2">Качественные связи продлевают жизнь и дают опору.</p>
+                        <div class="tag">Семья</div><div class="tag">Друзья</div><div class="tag">Сообщество</div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Время без телефонов, присутствие «здесь и сейчас»</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Семейные ритуалы и традиции</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Уважение границ, умение прощать</span></div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">💼 Любимое дело (Миссия) <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <p class="text-sm text-muted mb-2">Реализация + Творчество + Вклад в мир.</p>
+                        <div class="tag">Приоритет</div><div class="tag">Поток</div><div class="tag">Наследие</div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>10 признаков: мотивация, концентрация, рост, преодоление</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>4 критерия: польза людям, деньги, удовольствие процессу, готовность посвятить жизнь</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="energy" class="tab-content">
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">📉 23 Утечки Энергии (Чек-лист) <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <div class="grid grid-2 gap-2 text-sm">
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Споры и конфликты</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Осуждение и сплетни</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Токсичное окружение</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Попытки переделать других</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Многозадачность</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Незавершённые дела</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Самокопание и вина</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Сравнение себя с другими</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Прокрастинация</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Отсутствие границ</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Некачественный сон/питание</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>Жизнь не в своём ритме</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">⚙️ 24 Принципа Эффективности <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <div class="grid grid-2 gap-2 text-sm">
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>1. Всегда ставьте цель</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>2. Имейте ответ на «Зачем?»</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>3. Не делайте лишнего</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>4. Держите фокус</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>5. Не спешите</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>6. Действуйте или ждите</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>7. Думайте прежде чем делать</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>8. Планируйте</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>9. Выходите за рамки</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>10. Рискуйте разумно</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>11. Учитывайте затраты</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>12. Делегируйте</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>13. Не осуждайте</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>14. Не обвиняйте себя</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>15. Не ищите виноватых</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>16. Игнорируйте негатив</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>17. Не пытайтесь понравиться всем</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>18. Не принимайте близко к сердцу</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>19. Избегайте сомнительного</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>20. Не бойтесь ошибок</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>21. Делайте пилоты</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>22. Решайте на основе данных</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>23. Будьте последовательны</span></div>
+                            <div class="check-item"><input type="checkbox" class="check-box"><span>24. Используйте инструменты</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">🛡 12 Правил Сохранения Энергии <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Занимайся только тем, что даёт энергию</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Игнорируй негатив и «вампиров»</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Минимизируй токсичные контакты</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Фокусируйся на позитиве и благодарности</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Будь экономным в расходах энергии</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Говори «нет» лишнему</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Делегируй и сравнивай задачи</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Одно дело за раз (монозадачность)</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Завершай начатое</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Избегай ненужных обязательств</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Говори «нет» быстро и вежливо</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span>Не объясняй отказ излишне</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="goals" class="tab-content">
+                <div class="quote-card" style="border-left-color: var(--warning);">
+                    <div class="quote-text">«"Я хочу" — это желание. Цель — это приказ к результату, сформулированный от первого лица.»</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">📜 5 Законов Формулировки Цели <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>1. Письменная фиксация:</strong> Цель в голове искажается, на бумаге концентрирует.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>2. От первого лица ("Я"):</strong> Только личная ответственность. Без "мы", "надо", "стоит".</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>3. Цель как ПРИКАЗ:</strong> Глагол действия. "Я покупаю…", "Я создаю…", а не пожелание.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>4. Проверка "ЗАЧЕМ?":</strong> За целью должен стоять принцип/смысл, а не следствие.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>5. SMART-параметры:</strong> Конкретная, Измеримая, Достижимая, Значимая, Ограничена по времени.</span></div>
+                    </div>
+                </div>
+                <div class="quote-card" style="border-left-color: var(--success);">
+                    <div class="quote-text">✅ Пример: «Я снижаю вес до 75 кг к 1 декабря, чтобы быть здоровым и энергичным для семьи»</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+
+            <div id="flow" class="tab-content">
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">🌊 Принципы Потокового Планирования <i class="fas fa-chevron-down accordion-icon"></i></div>
+                    <div class="accordion-body">
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Выгрузка:</strong> Голова — процессор, не сервер. Переноси мысли на бумагу.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Pull-система:</strong> Вытягивай задачи по энергии, не запихивай по расписанию.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Атомарность:</strong> 1 дело = 1 карточка. Не смешивай разнородное.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Контейнер 45/15:</strong> 45 мин фокуса + 15 мин отдыха = цикл. Отдых планируется!</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Одно дело в единицу времени:</strong> Мультизадачность = потеря 30% КПД.</span></div>
+                        <div class="check-item"><input type="checkbox" class="check-box"><span><strong>Гибкость:</strong> Система подстраивается под изменения, а не ломается.</span></div>
+                    </div>
+                </div>
+                <div class="quote-card" style="border-left-color: var(--danger);">
+                    <div class="quote-text">«Не планируйте всё до минуты. Один-два сбоя — и план летит к чертям. Динамический подход важнее жёсткого расписания.»</div>
+                    <button class="copy-btn" onclick="copyQuote(this)"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle('open');
+        }
+
+        function copyQuote(btn) {
+            const text = btn.parentElement.querySelector('.quote-text').textContent;
+            navigator.clipboard.writeText(text.replace('«', '').replace('»', '').trim()).then(() => {
+                const icon = btn.querySelector('i');
+                icon.className = 'fas fa-check';
+                setTimeout(() => icon.className = 'fas fa-copy', 1500);
+            });
+        }
+    </script>
+	<!-- НИЖНЯЯ НАВИГАЦИЯ (Mobile) -->
+    <nav class="mobile-nav">
+     <a href="index.html"><i class="fas fa-home"></i><span>Дашборд</span></a>
+     <a href="strategy.html"><i class="fas fa-mountain"></i><span>Стандарт</span></a>
+     <a href="energy.html"><i class="fas fa-battery-half"></i><span>Энергия</span></a>
+     <a href="flow.html"><i class="fas fa-water"></i><span>Поток</span></a>
+     <a href="library.html"><i class="fas fa-book"></i><span>База</span></a>
+    </nav>
+</body>
+</html>

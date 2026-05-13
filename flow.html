@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поток - Планирование</title>
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+	    <!-- МОБИЛЬНАЯ НАВИГАЦИЯ (Стили) -->
+    <style>
+        .mobile-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-card); border-top: 1px solid var(--border);
+            display: none; justify-content: space-around; padding: 8px 0;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 900px) {
+            .mobile-nav { display: flex; }
+            .nav-links { display: none; }
+            body { padding-bottom: 70px; }
+        }
+        .mobile-nav a {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px;
+            padding: 6px; border-radius: 8px; transition: 0.2s; flex: 1; gap: 4px;
+        }
+        .mobile-nav a i { font-size: 20px; }
+        .mobile-nav a.active { color: var(--accent); }
+        .mobile-nav a:active { transform: scale(0.95); }
+    </style>
+</head>
+</head>
+<body>
+    <div class="container">
+        <nav class="card flex justify-between items-center mb-4" style="padding: 14px 24px;">
+            <div class="logo flex items-center gap-2 text-accent font-bold text-xl">
+                <i class="fas fa-bullseye"></i> МИССИЯ ВЫПОЛНИМА
+            </div>
+            <div class="nav-links flex gap-4">
+                <a href="index.html" class="nav-link text-muted hover:text-main">Дашборд</a>
+                <a href="strategy.html" class="nav-link text-muted hover:text-main">Стратегия</a>
+                <a href="energy.html" class="nav-link text-muted hover:text-main">Энергия</a>
+                <a href="flow.html" class="nav-link active text-accent font-semibold">Поток</a>
+            </div>
+            <a href="index.html" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> На дашборд</a>
+        </nav>
+
+        <div class="grid grid-2 gap-4 mb-4">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-brain"></i> Выгрузка из головы</div>
+                <textarea id="dump-input" class="textarea mb-3" placeholder="Выпишите сюда всё, что крутится в голове..."></textarea>
+                <div class="flex gap-2">
+                    <select id="energy-select" class="select" style="width: 150px;">
+                        <option value="low">🟢 Легкая</option>
+                        <option value="med" selected>🟡 Средняя</option>
+                        <option value="high">🔴 Сложная</option>
+                    </select>
+                    <button class="btn btn-primary flex-1" onclick="dumpTasks()">🌊 Вытянуть в Поток</button>
+                </div>
+            </div>
+
+            <div class="card border-success">
+                <div class="badge badge-success absolute" style="top: -10px; left: 20px;">ТЕКУЩИЙ ФОКУС</div>
+                <div class="card-title mt-2"><i class="fas fa-fire"></i> Активная задача</div>
+                
+                <div id="active-task-container" class="mb-4">
+                    <div class="text-lg font-bold">Нет активной задачи</div>
+                    <div class="text-sm text-muted mt-1">Перетащите задачу из бэклога</div>
+                </div>
+
+                <div class="timer text-accent" id="timer">45:00</div>
+                
+                <div class="flex justify-center gap-3 mb-4">
+                    <button class="btn btn-primary" onclick="startTimer()"><i class="fas fa-play"></i> Старт</button>
+                    <button class="btn btn-warning" onclick="pauseTimer()"><i class="fas fa-pause"></i> Пауза</button>
+                    <button class="btn btn-secondary" onclick="resetTimer()"><i class="fas fa-redo"></i> 15/45</button>
+                </div>
+
+                <div class="bg-hover border-l-4 border-accent p-3 rounded text-sm text-muted">
+                    <strong class="text-main">Принцип №10:</strong> Одно дело в единицу времени. Пока таймер тикает, вы не переключаетесь.
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-3 gap-4">
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="card-title mb-0">📥 Бэклог</div>
+                    <span class="badge badge-info" id="count-backlog">0</span>
+                </div>
+                <div id="col-backlog"></div>
+            </div>
+
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="card-title mb-0">🔥 В потоке</div>
+                    <span class="badge badge-warning" id="count-progress">0</span>
+                </div>
+                <div id="col-progress"></div>
+            </div>
+
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="card-title mb-0">✅ Готово</div>
+                    <span class="badge badge-success" id="count-done">0</span>
+                </div>
+                <div id="col-done"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let timerInterval;
+        let timeLeft = 45 * 60;
+        let isRunning = false;
+
+        function dumpTasks() {
+            const text = document.getElementById('dump-input').value.trim();
+            if (!text) return;
+
+            const energy = document.getElementById('energy-select').value;
+            const newTasks = text.split('\n').filter(t => t.trim() !== '');
+            
+            newTasks.forEach(t => {
+                tasks.push({
+                    id: Date.now() + Math.random(),
+                    title: t.trim(),
+                    status: 'backlog',
+                    energy: energy
+                });
+            });
+
+            document.getElementById('dump-input').value = '';
+            renderTasks();
+        }
+
+        function moveTask(id, newStatus) {
+            const task = tasks.find(t => t.id == id);
+            if (task) {
+                task.status = newStatus;
+                renderTasks();
+                checkActiveTask();
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id != id);
+            renderTasks();
+            checkActiveTask();
+        }
+
+        function renderTasks() {
+            const backlogEl = document.getElementById('col-backlog');
+            const progressEl = document.getElementById('col-progress');
+            const doneEl = document.getElementById('col-done');
+
+            backlogEl.innerHTML = '';
+            progressEl.innerHTML = '';
+            doneEl.innerHTML = '';
+
+            let cBack = 0, cProg = 0, cDone = 0;
+
+            tasks.forEach(task => {
+                const card = createCardHTML(task);
+                if (task.status === 'backlog') { backlogEl.innerHTML += card; cBack++; }
+                else if (task.status === 'progress') { progressEl.innerHTML += card; cProg++; }
+                else { doneEl.innerHTML += card; cDone++; }
+            });
+
+            document.getElementById('count-backlog').textContent = cBack;
+            document.getElementById('count-progress').textContent = cProg;
+            document.getElementById('count-done').textContent = cDone;
+        }
+
+        function createCardHTML(task) {
+            let dotClass = task.energy === 'high' ? 'text-danger' : task.energy === 'med' ? 'text-warning' : 'text-success';
+            let dotText = task.energy === 'high' ? '🔴' : task.energy === 'med' ? '🟡' : '🟢';
+            
+            let actions = '';
+            if (task.status === 'backlog') {
+                actions = `<button class="btn btn-sm btn-primary mt-2" onclick="moveTask(${task.id}, 'progress')">▶ В работу</button>`;
+            } else if (task.status === 'progress') {
+                actions = `<button class="btn btn-sm btn-success mt-2" onclick="moveTask(${task.id}, 'done')">✅ Готово</button>`;
+            } else {
+                actions = `<button class="btn btn-sm btn-danger mt-2" onclick="deleteTask(${task.id})">🗑 Удалить</button>`;
+            }
+
+            return `
+                <div class="bg-hover border border-border rounded p-3 mb-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="text-sm font-semibold mb-1">${task.title}</div>
+                            <div class="text-xs text-muted"><span class="${dotClass}">${dotText}</span> Энергия</div>
+                        </div>
+                    </div>
+                    <div class="mt-2">${actions}</div>
+                </div>
+            `;
+        }
+
+        function checkActiveTask() {
+            const progressTasks = tasks.filter(t => t.status === 'progress');
+            const container = document.getElementById('active-task-container');
+            
+            if (progressTasks.length > 0) {
+                const t = progressTasks[0];
+                let energyText = t.energy === 'high' ? '🔴 Требует много сил' : t.energy === 'med' ? '🟡 Средняя нагрузка' : '🟢 Легкая задача';
+                container.innerHTML = `
+                    <div class="text-lg font-bold">${t.title}</div>
+                    <div class="text-sm text-muted mt-1">${energyText}</div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="text-lg font-bold text-muted">Нет активной задачи</div>
+                    <div class="text-sm text-muted mt-1">Перетащите задачу из бэклога</div>
+                `;
+            }
+        }
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${m}:${s}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+                    else {
+                        clearInterval(timerInterval); 
+                        isRunning = false;
+                        alert('⏱ Таймер завершен!');
+                        timeLeft = 15 * 60;
+                        updateDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            if (timeLeft <= 15 * 60) timeLeft = 45 * 60;
+            else timeLeft = 15 * 60;
+            updateDisplay();
+        }
+
+        renderTasks();
+    </script
+	<!-- НИЖНЯЯ НАВИГАЦИЯ (Mobile) -->
+    <nav class="mobile-nav">
+     <a href="index.html"><i class="fas fa-home"></i><span>Дашборд</span></a>
+     <a href="strategy.html"><i class="fas fa-mountain"></i><span>Стандарт</span></a>
+     <a href="energy.html"><i class="fas fa-battery-half"></i><span>Энергия</span></a>
+     <a href="flow.html"><i class="fas fa-water"></i><span>Поток</span></a>
+    <a href="library.html"><i class="fas fa-book"></i><span>База</span></a>
+   </nav>
+</body>
+</html>

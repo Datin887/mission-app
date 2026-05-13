@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Guide — Миссия Выполнима</title>
+  <link rel="stylesheet" href="design-system.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .section { margin-bottom: 40px; }
+    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .demo-card { background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); }
+  </style>
+      <!-- МОБИЛЬНАЯ НАВИГАЦИЯ (Стили) -->
+    <style>
+        .mobile-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-card); border-top: 1px solid var(--border);
+            display: none; justify-content: space-around; padding: 8px 0;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 900px) {
+            .mobile-nav { display: flex; }
+            .nav-links { display: none; }
+            body { padding-bottom: 70px; }
+        }
+        .mobile-nav a {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px;
+            padding: 6px; border-radius: 8px; transition: 0.2s; flex: 1; gap: 4px;
+        }
+        .mobile-nav a i { font-size: 20px; }
+        .mobile-nav a.active { color: var(--accent); }
+        .mobile-nav a:active { transform: scale(0.95); }
+    </style>
+</head>
+</head>
+<body>
+  <div class="container">
+    <h1 style="margin:40px 0 20px;">🎨 Дизайн-система «Миссия Выполнима»</h1>
+    
+    <div class="section">
+      <div class="section-title">🔘 Кнопки</div>
+      <div class="demo-grid">
+        <button class="btn btn-primary"><i class="fas fa-check"></i> Primary</button>
+        <button class="btn btn-secondary"><i class="fas fa-times"></i> Secondary</button>
+        <button class="btn btn-danger"><i class="fas fa-trash"></i> Danger</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary btn-block">Block</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📊 Индикаторы энергии</div>
+      <div class="demo-grid">
+        <div class="energy-indicator high">
+          <span class="energy-dot"></span>
+          <div><div class="font-semibold">Физическая</div><div class="text-muted text-xs">75%</div></div>
+        </div>
+        <div class="energy-indicator medium">
+          <span class="energy-dot"></span>
+          <div><div class="font-semibold">Эмоциональная</div><div class="text-muted text-xs">60%</div></div>
+        </div>
+        <div class="energy-indicator low">
+          <span class="energy-dot"></span>
+          <div><div class="font-semibold">Ментальная</div><div class="text-muted text-xs">40%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📈 Прогресс-бары</div>
+      <div class="demo-card">
+        <div class="mb-4">
+          <div class="flex justify-between text-sm mb-2"><span>Капитал</span><span class="text-accent">30%</span></div>
+          <div class="progress"><div class="progress-fill" style="width:30%"></div></div>
+        </div>
+        <div class="mb-4">
+          <div class="flex justify-between text-sm mb-2"><span>Доход</span><span class="text-success">53%</span></div>
+          <div class="progress"><div class="progress-fill success" style="width:53%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏷 Бейджи</div>
+      <div class="flex gap-2">
+        <span class="badge badge-success">● Высокий</span>
+        <span class="badge badge-warning">⚠ Средний</span>
+        <span class="badge badge-danger">🔴 Низкий</span>
+        <span class="badge badge-info">ℹ Инфо</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⏱ Таймер</div>
+      <div class="demo-card text-center">
+        <div class="timer">45:00</div>
+        <div class="flex justify-center gap-2">
+          <button class="btn btn-primary btn-sm"><i class="fas fa-play"></i> Старт</button>
+          <button class="btn btn-secondary btn-sm"><i class="fas fa-pause"></i> Пауза</button>
+          <button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> Сброс</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔔 Тост-уведомление</div>
+      <button class="btn btn-primary" onclick="showToast('✅ Изменения сохранены!')">Показать тост</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✅ Изменения сохранены!</div>
+
+  <script>
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+  <!-- НИЖНЯЯ НАВИГАЦИЯ (Mobile) -->
+  <nav class="mobile-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Дашборд</span></a>
+    <a href="strategy.html"><i class="fas fa-mountain"></i><span>Стандарт</span></a>
+    <a href="energy.html"><i class="fas fa-battery-half"></i><span>Энергия</span></a>
+    <a href="flow.html"><i class="fas fa-water"></i><span>Поток</span></a>
+    <a href="library.html"><i class="fas fa-book"></i><span>База</span></a>
+  </nav>
+</body>
+</html>
